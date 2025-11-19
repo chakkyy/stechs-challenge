@@ -1,0 +1,176 @@
+openapi: 3.0.1
+info:
+  title: API STECHS Challenge FrontEnd
+  version: 1.0.0
+
+paths:
+  /cableModems:
+    get:
+      tags:
+        - CableModems
+      summary: Obtiene una lista de Cable Modems
+      parameters:
+        - name: name
+          in: query
+          description: Filtrar por nombre
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filtrar por estado
+          schema:
+            type: string
+            enum:
+              - Active
+              - Suspended
+              - Provision
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CableModem"
+    post:
+      tags:
+        - CableModems
+      summary: Crea un nuevo Cable Modem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CableModemCreate"
+      responses:
+        201:
+          description: Creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CableModem"
+  /cableModems/{id}:
+    get:
+      tags:
+        - CableModems
+      summary: Obtiene un Cable Modem por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del Cable Modem
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CableModem"
+        404:
+          description: No encontrado
+    put:
+      tags:
+        - CableModems
+      summary: Actualiza un Cable Modem por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del Cable Modem
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CableModemCreate"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CableModem"
+        404:
+          description: No encontrado
+    delete:
+      tags:
+        - CableModems
+      summary: Elimina un Cable Modem por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del Cable Modem
+          schema:
+            type: string
+      responses:
+        204:
+          description: Sin contenido
+        404:
+          description: No encontrado
+
+components:
+  schemas:
+    CableModem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426655440000
+        name:
+          type: string
+          example: CM 100 MB
+        description:
+          type: string
+          example: Configuración para 100 MB.
+        status:
+          type: string
+          enum:
+            - Active
+            - Suspended
+            - Provision
+          default: Active
+        validSince:
+          type: string
+          format: date-time
+          example: 2023-11-14T12:00:00.000Z
+        tags:
+          type: array
+          items:
+            type: string
+          example:
+            - tag1
+            - tag2
+    CableModemCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: CM 100 MB
+        description:
+          type: string
+          example: Configuración para 100 MB.
+        status:
+          type: string
+          enum:
+            - Active
+            - Suspended
+            - Provision
+          default: Active
+        validSince:
+          type: string
+          format: date-time
+          example: 2023-11-14T12:00:00.000Z
+        tags:
+          type: array
+          items:
+            type: string
+          example:
+            - tag1
+            - tag2
