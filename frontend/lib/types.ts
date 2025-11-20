@@ -1,4 +1,8 @@
-export type CableModemStatus = 'Active' | 'Suspended' | 'Provision';
+export enum CableModemStatus {
+  Active = 'Active',
+  Suspended = 'Suspended',
+  Provision = 'Provision',
+}
 
 export interface CableModem {
   id: string;
