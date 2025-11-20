@@ -2,7 +2,7 @@ import { CableModem } from './types';
 
 export const MOCK_CABLE_MODEMS: CableModem[] = [
   {
-    id: '123e4567-e89b-12d3-a456-426614174000',
+    id: '1',
     name: 'CM 100 MB',
     description: 'Standard 100MB connection',
     status: 'Active',
@@ -12,7 +12,7 @@ export const MOCK_CABLE_MODEMS: CableModem[] = [
     updatedAt: '2023-01-01T00:00:00Z',
   },
   {
-    id: '123e4567-e89b-12d3-a456-426614174001',
+    id: '2',
     name: 'CM 200 MB Pro',
     description: 'High speed 200MB connection for professionals',
     status: 'Active',
@@ -22,7 +22,7 @@ export const MOCK_CABLE_MODEMS: CableModem[] = [
     updatedAt: '2023-02-15T10:30:00Z',
   },
   {
-    id: '123e4567-e89b-12d3-a456-426614174002',
+    id: '3',
     name: 'CM 50 MB Legacy',
     description: 'Legacy 50MB connection',
     status: 'Suspended',
@@ -32,7 +32,7 @@ export const MOCK_CABLE_MODEMS: CableModem[] = [
     updatedAt: '2023-03-10T14:20:00Z',
   },
   {
-    id: '123e4567-e89b-12d3-a456-426614174003',
+    id: '4',
     name: 'CM 1 GB Fiber',
     description: 'Ultra fast 1GB fiber connection',
     status: 'Provision',
@@ -42,7 +42,7 @@ export const MOCK_CABLE_MODEMS: CableModem[] = [
     updatedAt: '2023-11-01T08:00:00Z',
   },
   {
-    id: '123e4567-e89b-12d3-a456-426614174004',
+    id: '5',
     name: 'CM 300 MB',
     description: null,
     status: 'Active',
@@ -52,7 +52,7 @@ export const MOCK_CABLE_MODEMS: CableModem[] = [
     updatedAt: '2023-05-20T11:15:00Z',
   },
   {
-    id: '123e4567-e89b-12d3-a456-426614174005',
+    id: '6',
     name: 'CM 100 MB V2',
     description: 'Updated 100MB hardware',
     status: 'Active',
