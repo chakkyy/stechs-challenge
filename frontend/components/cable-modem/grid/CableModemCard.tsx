@@ -1,8 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
+import { format } from 'date-fns';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { StatusBadge } from '@/components/cable-modem/StatusBadge';
+import { StatusBadge } from '../StatusBadge';
 import { CableModem } from '@/lib/types';
 
 interface CableModemCardProps {
@@ -11,11 +12,7 @@ interface CableModemCardProps {
 
 export function CableModemCard({ cableModem }: CableModemCardProps) {
   const formattedDate = cableModem.validSince
-    ? new Date(cableModem.validSince).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      })
+    ? format(new Date(cableModem.validSince), 'PPP')
     : 'N/A';
 
   return (

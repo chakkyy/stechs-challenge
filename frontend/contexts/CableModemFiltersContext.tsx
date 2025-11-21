@@ -13,6 +13,7 @@ interface CableModemFiltersContextType {
   handleClearSearch: () => void;
   cableModems: CableModem[];
   addCableModem: (modem: CableModemCreate) => CableModem;
+  removeCableModem: (id: string) => void;
 }
 
 const CableModemFiltersContext = createContext<CableModemFiltersContextType | undefined>(
@@ -45,8 +46,12 @@ export function CableModemFiltersProvider({ children }: { children: ReactNode })
     return newModem;
   };
 
+  const removeCableModem = (id: string) => {
+    setCableModems((prev) => prev.filter((modem) => modem.id !== id));
+  };
+
   return (
-    <CableModemFiltersContext.Provider value={{ ...filters, cableModems, addCableModem }}>
+    <CableModemFiltersContext.Provider value={{ ...filters, cableModems, addCableModem, removeCableModem }}>
       {children}
     </CableModemFiltersContext.Provider>
   );

@@ -1,4 +1,4 @@
-import { SearchBar } from '@/components/cable-modem/SearchBar';
+import { SearchBar } from './SearchBar';
 import { useCableModemFiltersContext } from '@/contexts/CableModemFiltersContext';
 
 export function CableModemFilters() {

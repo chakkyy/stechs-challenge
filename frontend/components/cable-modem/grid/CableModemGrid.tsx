@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { CableModemCard } from '@/components/cable-modem/CableModemCard';
+import { CableModemCard } from './CableModemCard';
 import { useCableModemFiltersContext } from '@/contexts/CableModemFiltersContext';
 
 export function CableModemGrid() {
