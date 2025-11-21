@@ -1,1 +1,1 @@
-export type AppRouter = Record<string, unknown>;
+export type { AppRouter } from '@backend/routers';
