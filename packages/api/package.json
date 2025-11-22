@@ -5,11 +5,13 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "lint": "eslint src/**/*.ts",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "typescript": "^5.3.3"
+    "backend": "workspace:*",
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3"
   }
 }

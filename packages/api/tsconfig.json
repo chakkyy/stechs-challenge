@@ -6,6 +6,7 @@
     "noEmit": false,
     "outDir": "dist",
     "declaration": true,
+    "composite": true,
     "baseUrl": ".",
     "paths": {
       "@backend/*": ["../../backend/src/*"],
@@ -14,6 +15,11 @@
   },
   "include": [
     "src/**/*"
+  ],
+  "references": [
+    {
+      "path": "../../backend"
+    }
   ],
   "exclude": [
     "node_modules"

@@ -1,0 +1,25 @@
+# Alternative: Development mode with just database
+# Usage: docker compose -f docker-compose.dev.yml up -d
+# Then: pnpm dev (runs backend/frontend locally for faster iteration)
+
+services:
+  db:
+    image: postgres:16
+    restart: always
+    ports:
+      - '${DB_PORT:-5434}:5432'
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-stechs_db}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+    volumes:
+      - stechs-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME:-postgres}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  stechs-db-data:
+
