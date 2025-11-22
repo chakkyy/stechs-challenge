@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useState } from 'react';
@@ -27,9 +28,9 @@ import {
   CableModemCreateInput,
   CableModemFieldNames,
 } from '@/lib/validations';
-import { useCableModemFiltersContext } from '@/contexts/CableModemFiltersContext';
 import { toast } from '@/hooks/use-toast';
-import { CableModemStatus } from '@/lib/types';
+import { CableModemStatus, CableModemStatusValues } from '@/lib/types';
+import { trpc } from '@/lib/trpc-react';
 
 interface CableModemFormProps {
   onSuccess: () => void;
@@ -39,7 +40,32 @@ interface CableModemFormProps {
 export function CableModemForm({ onSuccess, onCancel }: CableModemFormProps) {
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
-  const { addCableModem } = useCableModemFiltersContext();
+
+  const utils = trpc.useUtils();
+  const createMutation = trpc.cableModem.create.useMutation({
+    onSuccess: () => {
+      // Invalidate and refetch cable modems list
+      utils.cableModems.invalidate();
+
+      toast({
+        title: 'Success',
+        description: 'Cable modem created successfully',
+        variant: 'success',
+      });
+
+      reset();
+      setTags([]);
+      setTagInput('');
+      onSuccess();
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to create cable modem',
+        variant: 'destructive',
+      });
+    },
+  });
 
   // Get today's date in YYYY-MM-DD format for default value
   const today = new Date().toISOString().split('T')[0];
@@ -56,7 +82,7 @@ export function CableModemForm({ onSuccess, onCancel }: CableModemFormProps) {
     defaultValues: {
       [CableModemFieldNames.NAME]: '',
       [CableModemFieldNames.DESCRIPTION]: '',
-      [CableModemFieldNames.STATUS]: CableModemStatus.Active,
+      [CableModemFieldNames.STATUS]: CableModemStatusValues.Active,
       [CableModemFieldNames.VALID_SINCE]: today,
       [CableModemFieldNames.TAGS]: [],
     },
@@ -92,39 +118,20 @@ export function CableModemForm({ onSuccess, onCancel }: CableModemFormProps) {
   };
 
   const onSubmit = (data: CableModemCreateInput) => {
-    try {
-      const finalValidSince = data.validSince || today;
-      const finalStatus = data.status || CableModemStatus.Active;
+    const finalValidSince = data.validSince || today;
+    const finalStatus = data.status || CableModemStatusValues.Active;
 
-      const modemData = {
-        ...data,
-        description: data.description || null,
-        status: finalStatus,
-        validSince: finalValidSince
-          ? new Date(finalValidSince).toISOString()
-          : new Date().toISOString(),
-        tags: tags.length > 0 ? tags : [],
-      };
+    const modemData = {
+      ...data,
+      description: data.description || null,
+      status: finalStatus,
+      validSince: finalValidSince
+        ? new Date(finalValidSince).toISOString()
+        : new Date().toISOString(),
+      tags: tags.length > 0 ? tags : [],
+    };
 
-      addCableModem(modemData);
-
-      toast({
-        title: 'Success',
-        description: 'Cable modem created successfully',
-        variant: 'success',
-      });
-
-      reset();
-      setTags([]);
-      setTagInput('');
-      onSuccess();
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to create cable modem',
-        variant: 'destructive',
-      });
-    }
+    createMutation.mutate(modemData);
   };
 
   return (
@@ -173,13 +180,13 @@ export function CableModemForm({ onSuccess, onCancel }: CableModemFormProps) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem key="active" value={CableModemStatus.Active}>
+            <SelectItem key="active" value={CableModemStatusValues.Active}>
               Active
             </SelectItem>
-            <SelectItem key="suspended" value={CableModemStatus.Suspended}>
+            <SelectItem key="suspended" value={CableModemStatusValues.Suspended}>
               Suspended
             </SelectItem>
-            <SelectItem key="provision" value={CableModemStatus.Provision}>
+            <SelectItem key="provision" value={CableModemStatusValues.Provision}>
               Provision
             </SelectItem>
           </SelectContent>
@@ -260,10 +267,16 @@ export function CableModemForm({ onSuccess, onCancel }: CableModemFormProps) {
 
       {/* Form Actions */}
       <div className="flex gap-3 pt-4">
-        <Button type="submit" className="flex-1">
-          Create
+        <Button type="submit" className="flex-1" disabled={createMutation.isPending}>
+          {createMutation.isPending ? 'Creating...' : 'Create'}
         </Button>
-        <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          className="flex-1"
+          disabled={createMutation.isPending}
+        >
           Cancel
         </Button>
       </div>

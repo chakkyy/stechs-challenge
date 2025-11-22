@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   AlertDialog,
@@ -13,8 +14,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { useCableModemFiltersContext } from '@/contexts/CableModemFiltersContext';
 import { useToast } from '@/hooks/use-toast';
+import { trpc } from '@/lib/trpc-react';
 
 interface DeleteDialogProps {
   cableModemId: string;
@@ -24,18 +25,33 @@ interface DeleteDialogProps {
 
 export function DeleteDialog({ cableModemId, cableModemName, children }: DeleteDialogProps) {
   const router = useRouter();
-  const { removeCableModem } = useCableModemFiltersContext();
   const { toast } = useToast();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const utils = trpc.useUtils();
+
+  const deleteMutation = trpc.cableModem.delete.useMutation({
+    onSuccess: () => {
+      // Invalidate and refetch cable modems list
+      utils.cableModems.invalidate();
+      utils.cableModem.byId.invalidate({ id: cableModemId });
+
+      toast({
+        title: 'Cable Modem Deleted',
+        description: `Cable modem "${cableModemName}" has been deleted.`,
+      });
+
+      router.push('/');
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to delete cable modem',
+        variant: 'destructive',
+      });
+    },
+  });
 
   const handleDelete = () => {
-    setIsDeleting(true);
-    removeCableModem(cableModemId);
-    toast({
-      title: 'Cable Modem Deleted',
-      description: `Cable modem "${cableModemName}" has been deleted.`,
-    });
-    router.push('/');
+    deleteMutation.mutate({ id: cableModemId });
   };
 
   return (
@@ -51,12 +67,13 @@ export function DeleteDialog({ cableModemId, cableModemName, children }: DeleteD
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={deleteMutation.isPending}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
+            disabled={deleteMutation.isPending}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isDeleting ? 'Deleting...' : 'Delete'}
+            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

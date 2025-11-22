@@ -18,6 +18,11 @@
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
+  "references": [
+    {
+      "path": "../packages/api"
+    }
+  ],
   "exclude": [
     "node_modules"
   ]

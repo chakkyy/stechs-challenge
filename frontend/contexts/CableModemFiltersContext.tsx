@@ -1,57 +1,55 @@
 'use client';
 
 import { createContext, useContext, ReactNode, useState } from 'react';
-import { useCableModemFilters } from '@/hooks/useCableModemFilters';
-import { MOCK_CABLE_MODEMS } from '@/lib/mock-data';
-import { CableModem, CableModemCreate } from '@/lib/types';
+import { trpc } from '@/lib/trpc-react';
+import { CableModem } from '@/lib/types';
 
 interface CableModemFiltersContextType {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  filteredResults: CableModem[];
+  searchQuery: string;
   handleSearch: (term: string) => void;
   handleClearSearch: () => void;
   cableModems: CableModem[];
-  addCableModem: (modem: CableModemCreate) => CableModem;
-  removeCableModem: (id: string) => void;
+  isLoading: boolean;
+  error: Error | null;
 }
 
-const CableModemFiltersContext = createContext<CableModemFiltersContextType | undefined>(
-  undefined
-);
+const CableModemFiltersContext = createContext<CableModemFiltersContextType | undefined>(undefined);
 
 export function CableModemFiltersProvider({ children }: { children: ReactNode }) {
-  const [cableModems, setCableModems] = useState<CableModem[]>(MOCK_CABLE_MODEMS);
-  
-  const filters = useCableModemFilters({ data: cableModems });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const addCableModem = (modemData: CableModemCreate): CableModem => {
-    // Temporary generation of sequential ID
-    const maxId = cableModems.reduce((max, modem) => {
-      const id = parseInt(modem.id, 10);
-      return !isNaN(id) && id > max ? id : max;
-    }, 0);
-    const newId = (maxId + 1).toString();
+  // Fetch cable modems from backend using tRPC
+  const { data, isLoading, error } = trpc.cableModems.useQuery(
+    searchQuery ? { name: searchQuery } : undefined
+  );
 
-    // Timestamps will be generated on the BE 
-    const now = new Date().toISOString();
-    const newModem: CableModem = {
-      ...modemData,
-      id: newId,
-      createdAt: now,
-      updatedAt: now,
-    };
+  const cableModems = data || [];
 
-    setCableModems((prev) => [...prev, newModem]);
-    return newModem;
+  const handleSearch = (term: string) => {
+    setSearchQuery(term);
   };
 
-  const removeCableModem = (id: string) => {
-    setCableModems((prev) => prev.filter((modem) => modem.id !== id));
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setSearchQuery('');
   };
 
   return (
-    <CableModemFiltersContext.Provider value={{ ...filters, cableModems, addCableModem, removeCableModem }}>
+    <CableModemFiltersContext.Provider
+      value={{
+        searchTerm,
+        setSearchTerm,
+        searchQuery,
+        handleSearch,
+        handleClearSearch,
+        cableModems,
+        isLoading,
+        error: error as Error | null,
+      }}
+    >
       {children}
     </CableModemFiltersContext.Provider>
   );
@@ -60,9 +58,7 @@ export function CableModemFiltersProvider({ children }: { children: ReactNode })
 export function useCableModemFiltersContext() {
   const context = useContext(CableModemFiltersContext);
   if (context === undefined) {
-    throw new Error(
-      'useCableModemFiltersContext must be used within a CableModemFiltersProvider'
-    );
+    throw new Error('useCableModemFiltersContext must be used within a CableModemFiltersProvider');
   }
   return context;
 }

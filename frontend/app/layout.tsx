@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { CableModemFiltersProvider } from '@/contexts/CableModemFiltersContext';
+import { TRPCProvider } from '@/components/providers/TRPCProvider';
 
 export const metadata: Metadata = {
   title: 'Stechs Challenge',
@@ -16,10 +17,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="antialiased bg-background text-foreground">
-        <CableModemFiltersProvider>
-          {children}
-          <Toaster />
-        </CableModemFiltersProvider>
+        <TRPCProvider>
+          <CableModemFiltersProvider>
+            {children}
+            <Toaster />
+          </CableModemFiltersProvider>
+        </TRPCProvider>
       </body>
     </html>
   );

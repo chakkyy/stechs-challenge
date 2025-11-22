@@ -1,12 +1,20 @@
 import { useCableModemFiltersContext } from '@/contexts/CableModemFiltersContext';
 
 export function CableModemResultsCount() {
-  const { filteredResults } = useCableModemFiltersContext();
+  const { cableModems, isLoading } = useCableModemFiltersContext();
+
+  if (isLoading) {
+    return (
+      <div className="mb-4">
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-4">
       <p className="text-sm text-muted-foreground">
-        {filteredResults.length} {filteredResults.length === 1 ? 'modem' : 'modems'} found
+        {cableModems.length} {cableModems.length === 1 ? 'modem' : 'modems'} found
       </p>
     </div>
   );

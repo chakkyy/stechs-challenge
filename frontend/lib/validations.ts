@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-import { CableModemStatus } from './types';
-
 export enum CableModemFieldNames {
   NAME = 'name',
   DESCRIPTION = 'description',
@@ -22,7 +20,7 @@ export const cableModemCreateSchema = z.object({
     .trim(),
 
   [CableModemFieldNames.DESCRIPTION]: z.string().optional().or(z.literal('')),
-  [CableModemFieldNames.STATUS]: z.nativeEnum(CableModemStatus, {
+  [CableModemFieldNames.STATUS]: z.enum(['Active', 'Suspended', 'Provision'], {
     required_error: 'Status is required',
   }),
   [CableModemFieldNames.VALID_SINCE]: z.string().optional().or(z.literal('')),
